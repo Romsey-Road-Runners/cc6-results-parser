@@ -7,26 +7,10 @@ from pprint import pprint
 def parse_csv(file_name, race):
     csvfile = open(file_name, "r")
     field_names = (
-        "ID",
-        "Firstname",
-        "Surname",
-        "Club",
-        "Age Group",
-        "R1",
-        "R2",
-        "R3",
-        "R4",
-        "R5",
-        "R6",
-        "R7",
-        "Blank",
-        "R1 Age Group",
-        "R2 Age Group",
-        "R3 Age Group",
-        "R4 Age Group",
-        "R5 Age Group",
-        "R6 Age Group",
-        "R7 Age Group",
+        ["ID", "Firstname", "Surname", "Club", "Age Group"]
+        + [f"R{race_number}" for race_number in range(1, 7)]
+        + ["Blank"]
+        + [f"R{race_number} Age Group" for race_number in range(1, 7)]
     )
     reader = csv.DictReader(csvfile, field_names)
     results_list = []
