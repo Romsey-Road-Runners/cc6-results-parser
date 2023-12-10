@@ -1,0 +1,63 @@
+<script>
+    $ = jQuery.noConflict();
+    function renderTable(data) {
+        var resultsTable = '<tbody>';
+
+        // ITERATING THROUGH OBJECTS 
+        $.each(data, function (key, value) {
+
+            //CONSTRUCTION OF ROWS HAVING 
+            // DATA FROM JSON OBJECT 
+            resultsTable += '<tr>';
+            resultsTable += '<td>' +
+                value.position + '</td>';
+
+            resultsTable += '<td>' +
+                value.firstName + '</td>';
+
+            resultsTable += '<td>' +
+                value.surname + '</td>';
+
+            resultsTable += '<td>' +
+                value.club + '</td>';
+
+            resultsTable += '</tr>';
+        });
+        resultsTable += '</tbody>';
+
+        //INSERTING ROWS INTO TABLE 
+        $('#resultsTable > table > tbody').replaceWith(resultsTable);
+    }
+    $(document).ready(function () {
+        // FETCHING DATA FROM JSON FILE 
+        $.getJSON("/wp-content/uploads/2023/12/Race-3-Results.json",
+            function (data) {
+                var resultsCategories = '';
+                $.each(data, function (key, value) {
+                    if (key === 'Women') {
+                        resultsCategories += '<br/>'
+                    }
+                    resultsCategories += '<button type="button" id="' +
+                        key +
+                        '">' +
+                        key +
+                        '</button>';
+                });
+                //INSERTING INTO CATEGORY LIST
+                $('#resultsCategories').append(resultsCategories);
+
+                $('#resultsCategories button').trigger('click');
+                $(document).on("click", "button", function () {
+                    var target = $(this).attr("id");
+                    console.log(target);
+                    renderTable(data[target]);
+                });
+            });
+        $("#nameSearch").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#resultsTable tbody > tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    }); 
+</script>
