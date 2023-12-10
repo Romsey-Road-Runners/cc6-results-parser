@@ -51,6 +51,10 @@
                     var target = $(this).attr("id");
                     console.log(target);
                     renderTable(data[target]);
+                    var value = $("#nameSearch").val().toLowerCase();
+                    $("#resultsTable tbody > tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
                 });
             });
         $("#nameSearch").on("keyup", function () {
