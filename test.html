@@ -1,7 +1,14 @@
 <script>
     $ = jQuery.noConflict();
     function renderTable(data) {
-        var resultsTable = '<tbody>';
+        var resultsTable = '<table><thead><tr><th>Position</th><th>First Name</th><th>Surname</th><th>Club</th>';
+        if (Object.hasOwn(value, 'ageGroup')) {
+            resultsTable += '<th>Age Group</th>'
+        }
+        if (Object.hasOwn(value, 'gender')) {
+            resultsTable += '<th>Gender</th>'
+        }
+        resultsTable += '</tr></thead><tbody>';
 
         // ITERATING THROUGH OBJECTS 
         $.each(data, function (key, value) {
@@ -21,12 +28,22 @@
             resultsTable += '<td>' +
                 value.club + '</td>';
 
+            if (Object.hasOwn(value, 'ageGroup')) {
+                resultsTable += '<td>' +
+                    value.ageGroup + '</td>';
+            }
+
+            if (Object.hasOwn(value, 'gender')) {
+                resultsTable += '<td>' +
+                    value.gender + '</td>';
+            }
+
             resultsTable += '</tr>';
         });
-        resultsTable += '</tbody>';
+        resultsTable += '</tbody></table>';
 
         //INSERTING ROWS INTO TABLE 
-        $('#resultsTable > table > tbody').replaceWith(resultsTable);
+        $('#resultsTable > table').replaceWith(resultsTable);
     }
     $(document).ready(function () {
         // FETCHING DATA FROM JSON FILE 
