@@ -1,45 +1,66 @@
 <script>
     $ = jQuery.noConflict();
     function renderTable(data) {
-        var resultsTable = '<table><thead><tr><th>Position</th><th>First Name</th><th>Surname</th><th>Club</th>';
-        if (Object.hasOwn(value, 'ageGroup')) {
-            resultsTable += '<th>Age Group</th>'
-        }
-        if (Object.hasOwn(value, 'gender')) {
-            resultsTable += '<th>Gender</th>'
-        }
-        resultsTable += '</tr></thead><tbody>';
-
-        // ITERATING THROUGH OBJECTS 
-        $.each(data, function (key, value) {
-
-            //CONSTRUCTION OF ROWS HAVING 
-            // DATA FROM JSON OBJECT 
-            resultsTable += '<tr>';
-            resultsTable += '<td>' +
-                value.position + '</td>';
-
-            resultsTable += '<td>' +
-                value.firstName + '</td>';
-
-            resultsTable += '<td>' +
-                value.surname + '</td>';
-
-            resultsTable += '<td>' +
-                value.club + '</td>';
-
-            if (Object.hasOwn(value, 'ageGroup')) {
+        var resultsTable = '<table><thead><tr><th>Position</th>';
+        // IS THIS TEAM RESULTS?
+        if (Object.hasOwn(data[0], 'Name')) {
+            resultsTable += '<th>Club</th><th>League Position</th></tr></thead><tbody>'
+            // ITERATING THROUGH OBJECTS
+            $.each(data, function (key, value) {
+                //CONSTRUCTION OF ROWS HAVING
+                // DATA FROM JSON OBJECT
+                resultsTable += '<tr>';
                 resultsTable += '<td>' +
-                    value.ageGroup + '</td>';
-            }
-
-            if (Object.hasOwn(value, 'gender')) {
+                    value.position + '</td>';
                 resultsTable += '<td>' +
-                    value.gender + '</td>';
+                    value.name + '</td>';
+                resultsTable += '<td>' +
+                    value.leaguePosition + '</td>';
+                resultsTable += '</tr>';
+            });
+            // IF NOT TEAM RESULTS
+        } else {
+            resultsTable += '<th>First Name</th><th>Surname</th><th>Club</th>'
+            if (Object.hasOwn(data[0], 'ageGroup')) {
+                resultsTable += '<th>Age Group</th>'
             }
+            if (Object.hasOwn(data[0], 'gender')) {
+                resultsTable += '<th>Gender</th>'
+            }
+            resultsTable += '</tr></thead><tbody>';
 
-            resultsTable += '</tr>';
-        });
+            // ITERATING THROUGH OBJECTS
+            $.each(data, function (key, value) {
+
+                //CONSTRUCTION OF ROWS HAVING
+                // DATA FROM JSON OBJECT
+                resultsTable += '<tr>';
+                resultsTable += '<td>' +
+                    value.position + '</td>';
+
+                resultsTable += '<td>' +
+                    value.firstName + '</td>';
+
+                resultsTable += '<td>' +
+                    value.surname + '</td>';
+
+                resultsTable += '<td>' +
+                    value.club + '</td>';
+
+                if (Object.hasOwn(value, 'ageGroup')) {
+                    resultsTable += '<td>' +
+                        value.ageGroup + '</td>';
+                }
+
+                if (Object.hasOwn(value, 'gender')) {
+                    resultsTable += '<td>' +
+                        value.gender + '</td>';
+                }
+
+                resultsTable += '</tr>';
+            });
+        }
+
         resultsTable += '</tbody></table>';
 
         //INSERTING ROWS INTO TABLE 
@@ -54,13 +75,11 @@
                     if (key === 'Women' || key === 'Overall Results') {
                         resultsCategories += '<br/>'
                     }
-                    if (!key.includes("Teams")) {
-                        resultsCategories += '<button type="button" id="' +
-                            key +
-                            '">' +
-                            key +
-                            '</button>';
-                    }
+                    resultsCategories += '<button type="button" id="' +
+                        key +
+                        '">' +
+                        key +
+                        '</button>';
                 });
                 //INSERTING INTO CATEGORY LIST
                 $('#resultsCategories').append(resultsCategories);
