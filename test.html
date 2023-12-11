@@ -1,109 +1,145 @@
-<script>
-    $ = jQuery.noConflict();
-    function renderTable(data) {
-        var resultsTable = '<table><thead><tr><th>Position</th>';
-        // IS THIS TEAM RESULTS?
-        if (Object.hasOwn(data[0], 'Name')) {
-            resultsTable += '<th>Club</th><th>League Position</th></tr></thead><tbody>'
-            // ITERATING THROUGH OBJECTS
-            $.each(data, function (key, value) {
-                //CONSTRUCTION OF ROWS HAVING
-                // DATA FROM JSON OBJECT
-                resultsTable += '<tr>';
-                resultsTable += '<td>' +
-                    value.position + '</td>';
-                resultsTable += '<td>' +
-                    value.name + '</td>';
-                resultsTable += '<td>' +
-                    value.leaguePosition + '</td>';
-                resultsTable += '</tr>';
-            });
-            // IF NOT TEAM RESULTS
-        } else {
-            resultsTable += '<th>First Name</th><th>Surname</th><th>Club</th>'
-            if (Object.hasOwn(data[0], 'ageGroup')) {
-                resultsTable += '<th>Age Group</th>'
-            }
-            if (Object.hasOwn(data[0], 'gender')) {
-                resultsTable += '<th>Gender</th>'
-            }
-            resultsTable += '</tr></thead><tbody>';
+<html>
 
-            // ITERATING THROUGH OBJECTS
-            $.each(data, function (key, value) {
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-                //CONSTRUCTION OF ROWS HAVING
-                // DATA FROM JSON OBJECT
-                resultsTable += '<tr>';
-                resultsTable += '<td>' +
-                    value.position + '</td>';
+</head>
 
-                resultsTable += '<td>' +
-                    value.firstName + '</td>';
-
-                resultsTable += '<td>' +
-                    value.surname + '</td>';
-
-                resultsTable += '<td>' +
-                    value.club + '</td>';
-
-                if (Object.hasOwn(value, 'ageGroup')) {
-                    resultsTable += '<td>' +
-                        value.ageGroup + '</td>';
-                }
-
-                if (Object.hasOwn(value, 'gender')) {
-                    resultsTable += '<td>' +
-                        value.gender + '</td>';
-                }
-
-                resultsTable += '</tr>';
-            });
-        }
-
-        resultsTable += '</tbody></table>';
-
-        //INSERTING ROWS INTO TABLE 
-        $('#resultsTable > table').replaceWith(resultsTable);
-    }
-    $(document).ready(function () {
-        // FETCHING DATA FROM JSON FILE 
-        $.getJSON("/wp-content/uploads/2023/12/Race-3-Results-Overall-Teams.json",
-            function (data) {
-                var resultsCategories = '';
+<body>
+    <div id="resultsCategories">
+        things
+    </div>
+    <div id="resultsTable">
+        <table>
+            <thead>
+                <tr>
+                    <td>Banana</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Banana2</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        $ = jQuery.noConflict();
+        function renderTable(data) {
+            var firstValue = Object.values(data)[0]
+            var resultsTable = '<table><thead><tr><th>Position</th>';
+            // IS THIS TEAM RESULTS?
+            if (Object.hasOwn(firstValue, 'name')) {
+                resultsTable += '<th>Club</th><th>League Position</th></tr></thead><tbody>'
+                // ITERATING THROUGH OBJECTS
                 $.each(data, function (key, value) {
-                    if (key === 'Women' || key === 'Overall Results') {
-                        resultsCategories += '<br/>'
+                    //CONSTRUCTION OF ROWS HAVING
+                    // DATA FROM JSON OBJECT
+                    resultsTable += '<tr>';
+                    var positionString = "";
+                    if (value.position === 0) {
+                        positionString = "ORG";
+                    } else {
+                        positionString = value.position.toString();
                     }
-                    resultsCategories += '<button type="button" id="' +
-                        key +
-                        '">' +
-                        key +
-                        '</button>';
+                    resultsTable += '<td>' +
+                        positionString + '</td>';
+                    resultsTable += '<td>' +
+                        value.name + '</td>';
+                    resultsTable += '<td>' +
+                        value.leaguePosition + '</td>';
+                    resultsTable += '</tr>';
                 });
-                //INSERTING INTO CATEGORY LIST
-                $('#resultsCategories').append(resultsCategories);
+                // IF NOT TEAM RESULTS
+            } else {
+                resultsTable += '<th>First Name</th><th>Surname</th><th>Club</th>'
+                if (Object.hasOwn(firstValue, 'ageGroup')) {
+                    resultsTable += '<th>Age Group</th>'
+                }
+                if (Object.hasOwn(firstValue, 'gender')) {
+                    resultsTable += '<th>Gender</th>'
+                }
+                resultsTable += '</tr></thead><tbody>';
 
-                //RENDER INITIAL TABLE
-                renderTable(data["Overall Results"]);
+                // ITERATING THROUGH OBJECTS
+                $.each(data, function (key, value) {
 
-                //REGISTER FUNCTIONS FOR CATEGORIES
-                $('#resultsCategories button').trigger('click');
-                $(document).on("click", "button", function () {
-                    var target = $(this).attr("id");
-                    console.log(target);
-                    renderTable(data[target]);
-                    var value = $("#nameSearch").val().toLowerCase();
-                    $("#resultsTable tbody > tr").filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    //CONSTRUCTION OF ROWS HAVING
+                    // DATA FROM JSON OBJECT
+                    resultsTable += '<tr>';
+                    resultsTable += '<td>' +
+                        value.position + '</td>';
+
+                    resultsTable += '<td>' +
+                        value.firstName + '</td>';
+
+                    resultsTable += '<td>' +
+                        value.surname + '</td>';
+
+                    resultsTable += '<td>' +
+                        value.club + '</td>';
+
+                    if (Object.hasOwn(value, 'ageGroup')) {
+                        resultsTable += '<td>' +
+                            value.ageGroup + '</td>';
+                    }
+
+                    if (Object.hasOwn(value, 'gender')) {
+                        resultsTable += '<td>' +
+                            value.gender + '</td>';
+                    }
+
+                    resultsTable += '</tr>';
+                });
+            }
+
+            resultsTable += '</tbody></table>';
+
+            //INSERTING ROWS INTO TABLE 
+            $('#resultsTable > table').replaceWith(resultsTable);
+        }
+        $(document).ready(function () {
+            // FETCHING DATA FROM JSON FILE 
+            $.getJSON("/Race-3-Results.json",
+                function (data) {
+                    var resultsCategories = '';
+                    $.each(data, function (key, value) {
+                        if (key === 'Women' || key === 'Overall Results') {
+                            resultsCategories += '<br/>'
+                        }
+                        resultsCategories += '<button type="button" id="' +
+                            key +
+                            '">' +
+                            key +
+                            '</button>';
+                    });
+                    //INSERTING INTO CATEGORY LIST
+                    $('#resultsCategories').append(resultsCategories);
+
+                    //RENDER INITIAL TABLE
+                    renderTable(data["Overall Results"]);
+
+                    //REGISTER FUNCTIONS FOR CATEGORIES
+                    $('#resultsCategories button').trigger('click');
+                    $(document).on("click", "button", function () {
+                        var target = $(this).attr("id");
+                        console.log(target);
+                        renderTable(data[target]);
+                        var value = $("#nameSearch").val().toLowerCase();
+                        $("#resultsTable tbody > tr").filter(function () {
+                            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                        });
                     });
                 });
+            $("#nameSearch").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#resultsTable tbody > tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
             });
-        $("#nameSearch").on("keyup", function () {
-            var value = $(this).val().toLowerCase();
-            $("#resultsTable tbody > tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
-        });
-    }); 
-</script>
+        }); 
+    </script>
+
+</body>
+
+</html>

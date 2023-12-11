@@ -54,21 +54,27 @@ def parse_csv(file_name, race):
                     "firstName": "Unknown",
                     "surname": "Runner",
                     "club": "Unknown",
-                    "ageGroup": "Senior",
+                    "ageGroup": "Unknown",
                     "position": int(row[f"R{race}"]),
+                    "gender": "Unknown",
                 }
             )
             continue
+        age_cat_results = True
+        if not row.get(f"R{race} Age Group"):
+            age_cat_results = False
 
         results_dict = {
             "firstName": row["Firstname"].strip().title(),
             "surname": row["Surname"].strip().title(),
             "club": row["Club"].strip(),
-            "ageGroup": row["Age Group"].strip(),
             "position": int(row[f"R{race}"])
-            if not row.get(f"R{race} Age Group")
+            if not age_cat_results
             else int(row[f"R{race} Age Group"]),
         }
+
+        if not age_cat_results:
+            results_dict["ageGroup"] = row["Age Group"].strip()
 
         if row.get("Sex"):
             results_dict["gender"] = row["Sex"]
@@ -139,7 +145,9 @@ for combination in [(gender, age_cat) for gender in genders for age_cat in age_c
     file_list.append({"file_name": file_name, "dict_key": dict_key})
 
 # Cheekily add overall results file into the mix
-file_list += [{"file_name": file_prefix + "-Overall.csv", "dict_key": "Overall Results"}]
+file_list += [
+    {"file_name": file_prefix + "-Overall.csv", "dict_key": "Overall Results"}
+]
 
 for file in file_list:
     file_name = file["file_name"]
