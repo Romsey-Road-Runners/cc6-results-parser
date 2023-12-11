@@ -30,22 +30,28 @@
     }
     $(document).ready(function () {
         // FETCHING DATA FROM JSON FILE 
-        $.getJSON("/wp-content/uploads/2023/12/Race-3-Results.json",
+        $.getJSON("/wp-content/uploads/2023/12/Race-3-Results-Overall-Teams.json",
             function (data) {
                 var resultsCategories = '';
                 $.each(data, function (key, value) {
-                    if (key === 'Women') {
+                    if (key === 'Women' || key === 'Overall Results') {
                         resultsCategories += '<br/>'
                     }
-                    resultsCategories += '<button type="button" id="' +
-                        key +
-                        '">' +
-                        key +
-                        '</button>';
+                    if (!key.includes("Teams")) {
+                        resultsCategories += '<button type="button" id="' +
+                            key +
+                            '">' +
+                            key +
+                            '</button>';
+                    }
                 });
                 //INSERTING INTO CATEGORY LIST
                 $('#resultsCategories').append(resultsCategories);
 
+                //RENDER INITIAL TABLE
+                renderTable(data["Overall Results"]);
+
+                //REGISTER FUNCTIONS FOR CATEGORIES
                 $('#resultsCategories button').trigger('click');
                 $(document).on("click", "button", function () {
                     var target = $(this).attr("id");
