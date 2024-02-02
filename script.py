@@ -1,12 +1,13 @@
 import csv
 import json
+import os
 import sys
 from pprint import pprint
 
 
 def parse_csv(file_name, race):
     csvfile = open(file_name, "r")
-    if "Overall" in file_name:
+    if f"Race {race}.csv" in file_name:
         field_names = (
             "ID",
             "Pos",
@@ -135,18 +136,22 @@ file_prefix = f"Race-{race}-Results"
 file_list = []
 complete_results_dict = {}
 
+# Convert xlsx to csv
+command = f"soffice --headless --convert-to csv:\"Text - txt - csv (StarCalc)\":\"44,34,UTF8,1,,,,,,,,-1\" {file_prefix}.xlsx"
+os.system(command)
+
 # Process results for age cats and overall men and women
 for combination in [(gender, age_cat) for gender in genders for age_cat in age_cats]:
-    maybe_dash = "-" if combination[1] else ""
-    file_name = f"{file_prefix}-{combination[0]}{maybe_dash}{combination[1]}.csv"
+    maybe_space = " " if combination[1] else ""
+    file_name = f"{file_prefix}-{combination[0]}{maybe_space}{combination[1]}.csv"
     dict_key = (
-        f"{combination[0]} {combination[1]}" if maybe_dash else f"{combination[0]}"
+        f"{combination[0]} {combination[1]}" if maybe_space else f"{combination[0]}"
     )
     file_list.append({"file_name": file_name, "dict_key": dict_key})
 
 # Cheekily add overall results file into the mix
 file_list += [
-    {"file_name": file_prefix + "-Overall.csv", "dict_key": "Overall Results"}
+    {"file_name": f"{file_prefix}-Race {race}.csv", "dict_key": "Overall Results"}
 ]
 
 for file in file_list:
@@ -156,7 +161,7 @@ for file in file_list:
 
 # Process team results
 for team_file in [
-    {"file_name": f"{file_prefix}-{gender}-Team.csv", "dict_key": f"{gender}s Teams"}
+    {"file_name": f"{file_prefix}-{gender}s Team.csv", "dict_key": f"{gender}s Teams"}
     for gender in ["Men", "Women"]
 ]:
     file_name = team_file["file_name"]
