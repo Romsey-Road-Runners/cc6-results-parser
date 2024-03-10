@@ -69,9 +69,11 @@ def parse_csv(file_name, race):
             "firstName": row["Firstname"].strip().title(),
             "surname": row["Surname"].strip().title(),
             "club": row["Club"].strip(),
-            "position": int(row[f"R{race}"])
-            if not age_cat_results
-            else int(row[f"R{race} Age Group"]),
+            "position": (
+                int(row[f"R{race}"])
+                if not age_cat_results
+                else int(row[f"R{race} Age Group"])
+            ),
         }
 
         if not age_cat_results:
@@ -133,7 +135,7 @@ def parse_team_csv(file_name, race, champ=False):
     if champ:
         champ_results_list = []
         for team in team_results_list:
-            champ_results_list.append (
+            champ_results_list.append(
                 {
                     "name": team["name"],
                     "position": team["leaguePosition"],
@@ -162,7 +164,7 @@ def parse_champ_csv(file_name):
         "Best4",
     )
     reader = csv.DictReader(csvfile, field_names)
-    results_list = []    
+    results_list = []
     league_position_counter = 0
     for row in reader:
         if row["Firstname"] in ["Firstname", "Fname"] or not row[f"Best4"]:
@@ -175,7 +177,6 @@ def parse_champ_csv(file_name):
             "club": row["Club"].strip(),
             "position": league_position_counter,
             "ageGroup": row["Age Group"].strip(),
-
         }
         results_list.append(results_dict)
 
@@ -191,12 +192,14 @@ file_list = []
 complete_results_dict = {}
 
 # Convert xlsx to csv
-command = f"soffice --headless --convert-to csv:\"Text - txt - csv (StarCalc)\":\"44,34,UTF8,1,,,,,,,,-1\" {file_prefix}.xlsx"
+command = f'soffice --headless --convert-to csv:"Text - txt - csv (StarCalc)":"44,34,UTF8,1,,,,,,,,-1" {file_prefix}.xlsx'
 os.system(command)
 
 if not champ:
     # Process results for age cats and overall men and women
-    for combination in [(gender, age_cat) for gender in genders for age_cat in age_cats]:
+    for combination in [
+        (gender, age_cat) for gender in genders for age_cat in age_cats
+    ]:
         maybe_space = " " if combination[1] else ""
         file_name = f"{file_prefix}-{combination[0]}{maybe_space}{combination[1]}.csv"
         dict_key = (
@@ -216,7 +219,10 @@ if not champ:
 
     # Process team results
     for team_file in [
-        {"file_name": f"{file_prefix}-{gender}s Team.csv", "dict_key": f"{gender}s Teams"}
+        {
+            "file_name": f"{file_prefix}-{gender}s Team.csv",
+            "dict_key": f"{gender}s Teams",
+        }
         for gender in ["Men", "Women"]
     ]:
         file_name = team_file["file_name"]
@@ -238,7 +244,10 @@ else:
 
     # Process team results
     for team_file in [
-        {"file_name": f"{file_prefix}-{gender}s Team.csv", "dict_key": f"{gender}s Teams"}
+        {
+            "file_name": f"{file_prefix}-{gender}s Team.csv",
+            "dict_key": f"{gender}s Teams",
+        }
         for gender in ["Men", "Women"]
     ]:
         file_name = team_file["file_name"]
