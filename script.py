@@ -5,7 +5,7 @@ import sys
 from pprint import pprint
 
 
-def parse_csv(file_name, race):
+def parse_csv(file_name, race, champ=False, age_cat=False):
     csvfile = open(file_name, "r")
     if f"Race {race}.csv" in file_name:
         field_names = (
@@ -42,11 +42,27 @@ def parse_csv(file_name, race):
             "R5 Age Group",
             "R6 Age Group",
             "R7 Age Group",
+            "Best4"
         )
     reader = csv.DictReader(csvfile, field_names)
     results_list = []
+    league_position_counter = 0
+
     for row in reader:
-        if row["Firstname"] in ["Firstname", "Fname"] or not row[f"R{race}"]:
+        if row["Firstname"] in ["Firstname", "Fname"]:
+            continue
+
+        if champ:
+            league_position_counter += 1
+            position = league_position_counter
+            if not row["Best4"]:
+                continue
+        elif age_cat:
+            position = row[f"R{race}"]
+        else:
+            position = int(row[f"R{race} Age Group"])
+
+        if not position:
             continue
 
         if not row["Firstname"]:
@@ -56,27 +72,20 @@ def parse_csv(file_name, race):
                     "surname": "Runner",
                     "club": "Unknown",
                     "ageGroup": "Unknown",
-                    "position": int(row[f"R{race}"]),
+                    "position": position,
                     "gender": "Unknown",
                 }
             )
             continue
-        age_cat_results = True
-        if not row.get(f"R{race} Age Group"):
-            age_cat_results = False
 
         results_dict = {
             "firstName": row["Firstname"].strip().title(),
             "surname": row["Surname"].strip().title(),
             "club": row["Club"].strip(),
-            "position": (
-                int(row[f"R{race}"])
-                if not age_cat_results
-                else int(row[f"R{race} Age Group"])
-            ),
+            "position": position,
         }
 
-        if not age_cat_results:
+        if not age_cat:
             results_dict["ageGroup"] = row["Age Group"].strip()
 
         if row.get("Sex"):
@@ -214,8 +223,13 @@ if not champ:
 
     for file in file_list:
         file_name = file["file_name"]
+        dict_key = file["dict_key"]
         print("Processing " + file_name)
-        complete_results_dict[file["dict_key"]] = parse_csv(file_name, race)
+        if " V" in dict_key:
+            age_cat = True
+        else:
+            age_cat = False
+        complete_results_dict[dict_key] = parse_csv(file_name, race, age_cat)
 
     # Process team results
     for team_file in [
@@ -231,6 +245,7 @@ if not champ:
             team_file["file_name"], race
         )
 else:
+    print("Champ mode!")
     # Process champ results
     for champ_file in [
         {"file_name": f"{file_prefix}-{gender} Champ.csv", "dict_key": f"{gender}"}
@@ -256,6 +271,16 @@ else:
             team_file["file_name"], race, champ=True
         )
 
+    # Process results for age cats
+    for combination in [
+        (gender, age_cat) for gender in genders for age_cat in age_cats
+    ]:
+        if not combination[1]:
+            continue
+        file_name = f"{file_prefix}-{combination[0]} {combination[1]}.csv"
+        dict_key = (f"{combination[0]} {combination[1]}")
+        print("Processing " + file_name)
+        complete_results_dict[dict_key] = parse_csv(file_name, race, champ=True, age_cat=True)
 
 # Write out the monster JSON file
 with open(file_prefix + ".json", "w", encoding="utf-8") as json_file:
