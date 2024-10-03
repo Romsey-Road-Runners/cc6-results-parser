@@ -49,7 +49,7 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
     league_position_counter = 0
 
     for row in reader:
-        if row["Firstname"] in ["Firstname", "Fname"]:
+        if not row["Firstname"] or row["Firstname"] in ["Firstname", "Fname"]:
             continue
 
         if champ:
@@ -57,10 +57,10 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
             position = league_position_counter
             if not row["Best4"]:
                 continue
-        elif age_cat:
+        elif not age_cat:
             position = row[f"R{race}"]
         else:
-            position = int(row[f"R{race} Age Group"])
+            position = row[f"R{race} Age Group"]
 
         if not position:
             continue
@@ -72,7 +72,7 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
                     "surname": "Runner",
                     "club": "Unknown",
                     "ageGroup": "Unknown",
-                    "position": position,
+                    "position": int(position),
                     "gender": "Unknown",
                 }
             )
@@ -82,7 +82,7 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
             "firstName": row["Firstname"].strip().title(),
             "surname": row["Surname"].strip().title(),
             "club": row["Club"].strip(),
-            "position": position,
+            "position": int(position),
         }
 
         if not age_cat:
@@ -195,7 +195,7 @@ def parse_champ_csv(file_name):
 genders = ["Men", "Women"]
 age_cats = ["", "V40", "V50", "V60", "V70"]
 race = sys.argv[1]
-champ = sys.argv[2]
+champ = False
 file_prefix = f"Race-{race}-Results"
 file_list = []
 complete_results_dict = {}
@@ -229,7 +229,7 @@ if not champ:
             age_cat = True
         else:
             age_cat = False
-        complete_results_dict[dict_key] = parse_csv(file_name, race, age_cat)
+        complete_results_dict[dict_key] = parse_csv(file_name, race, champ=False, age_cat=age_cat)
 
     # Process team results
     for team_file in [
