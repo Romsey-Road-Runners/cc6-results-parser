@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import sys
+from decimal import *
 from pprint import pprint
 
 
@@ -127,7 +128,7 @@ def parse_team_csv(file_name, race, champ=False):
             {
                 "name": row["Name"].strip(),
                 "position": int(row[f"R{race}"]) if row[f"R{race}"] != "ORG" else 0,
-                "leaguePosition": int(row["Total"]),
+                "leaguePosition": Decimal(row["Total"]),
             }
         )
     league_position_counter = 0
