@@ -54,10 +54,10 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
             continue
 
         if champ:
-            league_position_counter += 1
-            position = league_position_counter
             if not row["Best4"]:
                 continue
+            league_position_counter += 1
+            position = league_position_counter
         elif not age_cat:
             position = row[f"R{race}"]
         else:
@@ -196,7 +196,7 @@ def parse_champ_csv(file_name):
 genders = ["Men", "Women"]
 age_cats = ["", "V40", "V50", "V60", "V70"]
 race = sys.argv[1]
-champ = False
+champ = True
 file_prefix = f"Race-{race}-Results"
 file_list = []
 complete_results_dict = {}
