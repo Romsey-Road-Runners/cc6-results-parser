@@ -43,7 +43,7 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
             "R5 Age Group",
             "R6 Age Group",
             "R7 Age Group",
-            "Best4"
+            "Best3"
         )
     reader = csv.DictReader(csvfile, field_names)
     results_list = []
@@ -54,7 +54,7 @@ def parse_csv(file_name, race, champ=False, age_cat=False):
             continue
 
         if champ:
-            if not row["Best4"]:
+            if not row["Best3"]:
                 continue
             league_position_counter += 1
             position = league_position_counter
@@ -171,24 +171,29 @@ def parse_champ_csv(file_name):
         "R5",
         "R6",
         "R7",
-        "Best4",
+        "best3",
     )
     reader = csv.DictReader(csvfile, field_names)
     results_list = []
-    league_position_counter = 0
     for row in reader:
-        if row["Firstname"] in ["Firstname", "Fname"] or not row[f"Best4"]:
+        if row["Firstname"] in ["Firstname", "Fname"] or not row["best3"]:
             continue
-
-        league_position_counter += 1
         results_dict = {
             "firstName": row["Firstname"].strip().title(),
             "surname": row["Surname"].strip().title(),
             "club": row["Club"].strip(),
-            "position": league_position_counter,
+            "best3": int(row["best3"].strip()),
             "ageGroup": row["Age Group"].strip(),
         }
         results_list.append(results_dict)
+
+    league_position_counter = 0
+    previous_Best3 = 0
+    results_list = sorted(results_list, key=lambda d: d["best3"])
+    for row in results_list:
+        if row["best3"] != previous_Best3:
+            league_position_counter += 1
+        row["position"] = league_position_counter
 
     return sorted(results_list, key=lambda d: d["position"])
 
@@ -249,7 +254,7 @@ else:
     print("Champ mode!")
     # Process champ results
     for champ_file in [
-        {"file_name": f"{file_prefix}-{gender} Champ.csv", "dict_key": f"{gender}"}
+        {"file_name": f"{file_prefix}-{gender}.csv", "dict_key": f"{gender}"}
         for gender in ["Men", "Women"]
     ]:
         file_name = champ_file["file_name"]
@@ -273,15 +278,15 @@ else:
         )
 
     # Process results for age cats
-    for combination in [
-        (gender, age_cat) for gender in genders for age_cat in age_cats
-    ]:
-        if not combination[1]:
-            continue
-        file_name = f"{file_prefix}-{combination[0]} {combination[1]}.csv"
-        dict_key = (f"{combination[0]} {combination[1]}")
-        print("Processing " + file_name)
-        complete_results_dict[dict_key] = parse_csv(file_name, race, champ=True, age_cat=True)
+    # for combination in [
+    #     (gender, age_cat) for gender in genders for age_cat in age_cats
+    # ]:
+    #     if not combination[1]:
+    #         continue
+    #     file_name = f"{file_prefix}-{combination[0]} {combination[1]}.csv"
+    #     dict_key = (f"{combination[0]} {combination[1]}")
+    #     print("Processing " + file_name)
+    #     complete_results_dict[dict_key] = parse_csv(file_name, race, champ=True, age_cat=True)
 
 # Write out the monster JSON file
 with open(file_prefix + ".json", "w", encoding="utf-8") as json_file:
